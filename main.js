@@ -1,13 +1,31 @@
+require('dotenv').config();
+
+const nodemailer = require('nodemailer');
 const express = require('express')
 const cors = require('cors')
 const mongoose = require('mongoose')
 
+
 //middleware
 
-const app = express()
+const app = express();
 app.use(cors())
 app.use(express.json())
 
+
+//Nodemailer
+
+console.log("EMAIL_USER =", process.env.EMAIL_USER);
+console.log("EMAIL_PASS =", process.env.EMAIL_PASS);
+
+const transporter = nodemailer.createTransport({
+  service: "gmail",
+   auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS
+   }
+
+})
 
 //Database
 
@@ -54,7 +72,31 @@ app.post("/api/register", async (req, res) => {
 
     await newUser.save();
 
-    res.json({ message: "User registered successfully" });
+        
+       // Send Email  -  (Nodemailer)
+
+          await transporter.verify();
+          console.log("SMTP connection successfull");
+
+          await transporter.sendMail({
+          from: process.env.EMAIL_USER,
+          to: process.env.EMAIL_USER, // Your email
+          
+          subject: "New Contact Form Submission",
+          html: `
+          
+           <h2>New Contact Form Submission</h2>
+            <p><strong>Name:</strong> ${name}</p>
+            <p><strong>Email:</strong> ${email}</p>
+            <p><strong>Phone:</strong> ${phone}</p>
+            <p><strong>Message:</strong> ${message}</p>
+           `
+          });
+
+
+
+
+    res.json({ message: "User registered successfully  and email sent " });
 
   } catch (error) {
     console.log(error);
@@ -67,3 +109,4 @@ app.post("/api/register", async (req, res) => {
 app.listen(3000, () => {
   console.log("Server running at http://localhost:3000");
 });
+
