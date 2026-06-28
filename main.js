@@ -1,14 +1,24 @@
 require('dotenv').config();
 
 const nodemailer = require('nodemailer');
-const express = require('express')
-const cors = require('cors')
-const mongoose = require('mongoose')
+const express = require('express');
+const cors = require('cors');
+const mongoose = require('mongoose');
+const dns =  require('dns');
+
+dns.setServers([
+     '1.1.1.1',
+      '8.8.8.8' 
+])
+
+
+const app = express();
+const PORT = process.env.PORT || 3000;
+console.log("MONGO_URI:" , process.env.MONGO_URI);
 
 
 //middleware
 
-const app = express();
 app.use(cors())
 app.use(express.json())
 
@@ -27,10 +37,10 @@ const transporter = nodemailer.createTransport({
 
 })
 
-//Database
 
-mongoose.connect("mongodb://localhost:27017/formDB")
-.then(() => console.log("MongoDB is connected"))
+//  Database
+mongoose.connect(process.env.MONGO_URI)
+.then(() => console.log("MongoDB cloud database is connected"))
 .catch(err => console.log(err));
 
 
