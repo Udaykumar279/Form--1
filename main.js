@@ -29,7 +29,9 @@ app.use(express.json())
 //  console.log("EMAIL_PASS =", process.env.EMAIL_PASS);
 
 const transporter = nodemailer.createTransport({
-  service: "gmail",
+  host: "smtp.gmail.com",
+  port: 587,
+  secure: false,
    auth: {
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASS
@@ -100,8 +102,6 @@ app.post("/api/register", async (req, res) => {
             <p><strong>Message:</strong> ${message}</p>
            `
           });
-
-
 
 
     res.json({ message: "User registered successfully  and email sent " });
